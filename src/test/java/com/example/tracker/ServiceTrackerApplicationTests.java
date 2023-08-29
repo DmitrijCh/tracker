@@ -9,5 +9,4 @@ class ServiceTrackerApplicationTests {
 	@Test
 	void contextLoads() {
 	}
-
 }

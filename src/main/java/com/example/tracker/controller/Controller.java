@@ -55,7 +55,6 @@ public class Controller {
         MailItem updatedMailItem = mailService.updateCurrentPostOffice(mailItemId, postOfficeId);
 
         if (updatedMailItem != null) {
-            // Создание и сохранение записи истории движения при прибытии в отделение
             MovementHistory historyEntry = new MovementHistory();
             historyEntry.setMailItem(updatedMailItem);
             historyEntry.setTimestamp(LocalDateTime.now());

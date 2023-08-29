@@ -22,6 +22,13 @@ public class MovementHistory {
     public MovementHistory() {
     }
 
+    public MovementHistory(MailItem mailItem, String location) {
+        this.mailItem = mailItem;
+        this.location = location;
+        this.timestamp = LocalDateTime.now(); // Устанавливаем текущее время
+        this.status = "Some status"; // Установите желаемый статус
+    }
+
     public Long getId() {
         return id;
     }
