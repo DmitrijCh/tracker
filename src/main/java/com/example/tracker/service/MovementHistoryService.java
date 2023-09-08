@@ -17,7 +17,6 @@ public class MovementHistoryService {
         this.movementHistoryRepository = movementHistoryRepository;
     }
 
-
     public List<MovementHistory> getFullHistory(MailItem mailItem) {
         return movementHistoryRepository.findByMailItemOrderByTimestampDesc(mailItem);
     }

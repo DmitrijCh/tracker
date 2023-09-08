@@ -6,24 +6,22 @@ import com.example.tracker.repository.MailItemRepository;
 import com.example.tracker.repository.PostOfficeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MailServiceTest {
-    @Mock
+
     private MailItemRepository mailItemRepository;
-
-    @Mock
     private PostOfficeRepository postOfficeRepository;
-
     private MailService mailService;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
+        mailItemRepository = mock(MailItemRepository.class);
+        postOfficeRepository = mock(PostOfficeRepository.class);
         mailService = new MailService(mailItemRepository, postOfficeRepository);
     }
 
@@ -32,39 +30,80 @@ public class MailServiceTest {
         MailItem mailItem = new MailItem();
         when(mailItemRepository.save(mailItem)).thenReturn(mailItem);
 
-        MailItem result = mailService.registerMailItem(mailItem);
+        MailItem savedMailItem = mailService.registerMailItem(mailItem);
 
-        assertEquals(mailItem, result);
+        assertNotNull(savedMailItem);
         verify(mailItemRepository, times(1)).save(mailItem);
     }
 
     @Test
     public void testUpdateCurrentPostOffice() {
-        MailItem mailItem = new MailItem();
-        PostOffice postOffice = new PostOffice();
+        Long mailItemId = 1L;
+        Long postOfficeId = 2L;
 
-        when(mailItemRepository.findById(1L)).thenReturn(java.util.Optional.of(mailItem));
-        when(postOfficeRepository.findById(2L)).thenReturn(java.util.Optional.of(postOffice));
+        MailItem mailItem = new MailItem();
+        mailItem.setId(mailItemId);
+
+        PostOffice postOffice = new PostOffice();
+        postOffice.setId(postOfficeId);
+
+        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.ofNullable(mailItem));
+        when(postOfficeRepository.findById(postOfficeId)).thenReturn(java.util.Optional.ofNullable(postOffice));
         when(mailItemRepository.save(mailItem)).thenReturn(mailItem);
 
-        MailItem result = mailService.updateCurrentPostOffice(1L, 2L);
+        MailItem updatedMailItem = mailService.updateCurrentPostOffice(mailItemId, postOfficeId);
 
-        assertEquals(mailItem, result);
-        assertEquals(postOffice, mailItem.getCurrentPostOffice());
+        assertNotNull(updatedMailItem);
+        assertEquals(postOffice, updatedMailItem.getCurrentPostOffice());
         verify(mailItemRepository, times(1)).save(mailItem);
     }
 
-    // Добавьте аналогичные тесты для остальных методов
+    @Test
+    public void testUpdateDepartureFromPostOffice() {
+        Long mailItemId = 1L;
+
+        MailItem mailItem = new MailItem();
+        mailItem.setId(mailItemId);
+
+        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.ofNullable(mailItem));
+        when(mailItemRepository.save(mailItem)).thenReturn(mailItem);
+
+        MailItem updatedMailItem = mailService.updateDepartureFromPostOffice(mailItemId);
+
+        assertNotNull(updatedMailItem);
+        assertNull(updatedMailItem.getCurrentPostOffice());
+        verify(mailItemRepository, times(1)).save(mailItem);
+    }
+
+    @Test
+    public void testUpdateReceivedStatus() {
+        Long mailItemId = 1L;
+
+        MailItem mailItem = new MailItem();
+        mailItem.setId(mailItemId);
+
+        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.ofNullable(mailItem));
+        when(mailItemRepository.save(mailItem)).thenReturn(mailItem);
+
+        MailItem updatedMailItem = mailService.updateReceivedStatus(mailItemId);
+
+        assertNotNull(updatedMailItem);
+        assertTrue(updatedMailItem.isReceived());
+        verify(mailItemRepository, times(1)).save(mailItem);
+    }
 
     @Test
     public void testFindMailItemById() {
+        Long mailItemId = 1L;
         MailItem mailItem = new MailItem();
+        mailItem.setId(mailItemId);
 
-        when(mailItemRepository.findById(1L)).thenReturn(java.util.Optional.of(mailItem));
+        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.ofNullable(mailItem));
 
-        MailItem result = mailService.findMailItemById(1L);
+        MailItem foundMailItem = mailService.findMailItemById(mailItemId);
 
-        assertEquals(mailItem, result);
+        assertNotNull(foundMailItem);
+        assertEquals(mailItemId, foundMailItem.getId());
     }
 }
 

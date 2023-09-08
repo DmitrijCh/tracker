@@ -1,31 +1,30 @@
 package com.example.tracker.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-
-import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
 
 public class MovementHistoryTest {
 
     @Test
-    public void testGetSetId() {
+    public void testGetAndSetId() {
         MovementHistory history = new MovementHistory();
         history.setId(1L);
         assertEquals(1L, history.getId());
     }
 
     @Test
-    public void testGetSetMailItem() {
+    public void testGetAndSetMailItem() {
         MovementHistory history = new MovementHistory();
-        MailItem mailItem = mock(MailItem.class); // Мокирование MailItem для теста
+        MailItem mailItem = new MailItem();
         history.setMailItem(mailItem);
         assertEquals(mailItem, history.getMailItem());
     }
 
     @Test
-    public void testGetSetTimestamp() {
+    public void testGetAndSetTimestamp() {
         MovementHistory history = new MovementHistory();
         LocalDateTime timestamp = LocalDateTime.now();
         history.setTimestamp(timestamp);
@@ -33,14 +32,14 @@ public class MovementHistoryTest {
     }
 
     @Test
-    public void testGetSetLocation() {
+    public void testGetAndSetLocation() {
         MovementHistory history = new MovementHistory();
         history.setLocation("Location A");
         assertEquals("Location A", history.getLocation());
     }
 
     @Test
-    public void testGetSetStatus() {
+    public void testGetAndSetStatus() {
         MovementHistory history = new MovementHistory();
         history.setStatus("Status XYZ");
         assertEquals("Status XYZ", history.getStatus());

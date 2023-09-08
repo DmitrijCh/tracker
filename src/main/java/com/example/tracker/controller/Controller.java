@@ -4,9 +4,11 @@ import com.example.tracker.entity.*;
 import com.example.tracker.repository.MovementHistoryRepository;
 import com.example.tracker.service.MailService;
 import com.example.tracker.service.MovementHistoryService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +20,7 @@ public class Controller {
     private final MailService mailService;
     private final MovementHistoryService movementHistoryService;
     private final MovementHistoryRepository movementHistoryRepository;
+    private final Logger logger = LoggerFactory.getLogger(Controller.class);
 
     @Autowired
     public Controller(MailService mailService, MovementHistoryService movementHistoryService, MovementHistoryRepository movementHistoryRepository) {
@@ -28,8 +31,8 @@ public class Controller {
 
     @PostMapping("/register")
     public ResponseEntity<MailItem> registerMail(@RequestBody MailItem mailItem) {
-        System.out.println("Поступил запрос на регистрацию почты: ");
-        System.out.println(" ");
+        logger.info("Поступил запрос на регистрацию почты:");
+        logger.info("");
 
         MailItem registeredMailItem = mailService.registerMailItem(mailItem);
 
@@ -39,7 +42,6 @@ public class Controller {
         historyEntry.setLocation("Регистрация отправления");
         historyEntry.setStatus("Зарегистрировано");
         movementHistoryRepository.save(historyEntry);
-
         return ResponseEntity.ok(registeredMailItem);
     }
 
@@ -48,9 +50,9 @@ public class Controller {
         Long mailItemId = request.getMailItemId();
         Long postOfficeId = request.getPostOfficeId();
 
-        System.out.println("Получен запрос на обновление прибытия почты.");
-        System.out.println("Идентификатор почтового отправления: " + mailItemId);
-        System.out.println("Идентификатор почтового отделения: " + postOfficeId);
+        logger.info("Получен запрос на обновление прибытия почты.");
+        logger.info("Идентификатор почтового отправления: {}", mailItemId);
+        logger.info("Идентификатор почтового отделения: {}", postOfficeId);
 
         MailItem updatedMailItem = mailService.updateCurrentPostOffice(mailItemId, postOfficeId);
 
@@ -62,12 +64,13 @@ public class Controller {
             historyEntry.setStatus("Прибыло в отделение");
             movementHistoryRepository.save(historyEntry);
 
-            System.out.println("Почтовый элемент успешно обновлен.");
-            System.out.println(" ");
+            logger.info("Почтовый элемент успешно обновлен.");
+            logger.info(" ");
             return ResponseEntity.ok(updatedMailItem);
         } else {
-            System.out.println("Почтовый отправление или почтовое отделение не найдено.");
-            System.out.println(" ");
+            logger.info("Почтовый отправление или почтовое отделение не найдено.");
+            logger.info(" ");
+
             return ResponseEntity.notFound().build();
         }
     }
@@ -76,8 +79,8 @@ public class Controller {
     public ResponseEntity<MailItem> updateMailDeparture(@RequestBody MailDepartureRequest request) {
         Long mailItemId = request.getMailItemId();
 
-        System.out.println("Получен запрос на убытие из почтового отделения.");
-        System.out.println("Идентификатор почтового отправления: " + mailItemId);
+        logger.info("Получен запрос на убытие из почтового отделения.");
+        logger.info("Идентификатор почтового отправления: {}", mailItemId);
 
         MailItem updatedMailItem = mailService.updateDepartureFromPostOffice(mailItemId);
 
@@ -89,12 +92,12 @@ public class Controller {
             historyEntry.setStatus("Отправлено из отделения");
             movementHistoryRepository.save(historyEntry);
 
-            System.out.println("Почтовый элемент успешно обновлен.");
-            System.out.println(" ");
+            logger.info("Почтовый элемент успешно обновлен.");
+            logger.info(" ");
             return ResponseEntity.ok(updatedMailItem);
         } else {
-            System.out.println("Почтовое отправление не найдено.");
-            System.out.println(" ");
+            logger.info("Почтовое отправление не найдено.");
+            logger.info(" ");
             return ResponseEntity.notFound().build();
         }
     }
@@ -103,8 +106,8 @@ public class Controller {
     public ResponseEntity<MailItem> receiveMail(@RequestBody MailItemIdWrapper wrapper) {
         Long mailItemId = wrapper.getMailItemId();
 
-        System.out.println("Получен запрос на получение почты.");
-        System.out.println("Идентификатор почтового отправления: " + mailItemId);
+        logger.info("Получен запрос на получение почты.");
+        logger.info("Идентификатор почтового отправления: {}", mailItemId);
 
         MailItem receivedMailItem = mailService.updateReceivedStatus(mailItemId);
 
@@ -116,12 +119,12 @@ public class Controller {
             historyEntry.setStatus("Доставлено адресату");
             movementHistoryRepository.save(historyEntry);
 
-            System.out.println("Почтовый элемент успешно получен.");
-            System.out.println(" ");
+            logger.info("Почтовый элемент успешно получен.");
+            logger.info(" ");
             return ResponseEntity.ok(receivedMailItem);
         } else {
-            System.out.println("Почтовое отправление не найдено.");
-            System.out.println(" ");
+            logger.info("Почтовое отправление не найдено.");
+            logger.info(" ");
             return ResponseEntity.notFound().build();
         }
     }
@@ -133,26 +136,24 @@ public class Controller {
         MailItem mailItem = mailService.findMailItemById(mailItemId);
 
         if (mailItem == null) {
-            System.out.println("Почтовый элемент не найден");
-            System.out.println(" ");
+            logger.info("Почтовый элемент не найден");
+            logger.info(" ");
             return ResponseEntity.notFound().build();
         }
 
         List<MovementHistory> history = movementHistoryService.getFullHistory(mailItem);
 
         if (history.isEmpty()) {
-            System.out.println("История пуста");
-            System.out.println(" ");
+            logger.info("История пуста");
+            logger.info(" ");
         } else {
-            System.out.println("История включает: " + history.size() + " запись(и)");
+            logger.info("История включает: {} запись(и)", history.size());
             for (MovementHistory entry : history) {
-                System.out.println("Время и дата: " + entry.getTimestamp() +
-                        ", Уведомление: " + entry.getLocation() +
-                        ", Статус: " + entry.getStatus());
+                logger.info("Время и дата: {}, Уведомление: {}, Статус: {}",
+                        entry.getTimestamp(), entry.getLocation(), entry.getStatus());
             }
-            System.out.println(" ");
+            logger.info(" ");
         }
-
         return ResponseEntity.ok(history);
     }
 }

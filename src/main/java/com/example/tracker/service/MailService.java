@@ -51,10 +51,8 @@ public class MailService {
             mailItem.setReceived(true);
             return mailItemRepository.save(mailItem);
         }
-
         return null;
     }
-
 
     public MailItem findMailItemById(Long mailItemId) {
         return mailItemRepository.findById(mailItemId).orElse(null);

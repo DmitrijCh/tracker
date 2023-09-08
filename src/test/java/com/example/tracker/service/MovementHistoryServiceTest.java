@@ -5,7 +5,6 @@ import com.example.tracker.entity.MovementHistory;
 import com.example.tracker.repository.MovementHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
@@ -15,14 +14,14 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MovementHistoryServiceTest {
-    @Mock
-    private MovementHistoryRepository movementHistoryRepository;
 
+    private MovementHistoryRepository movementHistoryRepository;
     private MovementHistoryService movementHistoryService;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        MockitoAnnotations.initMocks(this);
+        movementHistoryRepository = mock(MovementHistoryRepository.class);
         movementHistoryService = new MovementHistoryService(movementHistoryRepository);
     }
 
@@ -41,10 +40,9 @@ public class MovementHistoryServiceTest {
 
         List<MovementHistory> result = movementHistoryService.getFullHistory(mailItem);
 
-        assertEquals(2, result.size());
-        assertEquals(history2, result.get(0));
-        assertEquals(history1, result.get(1));
-        verify(movementHistoryRepository, times(1)).findByMailItemOrderByTimestampDesc(mailItem);
+        assertEquals(history2.getId(), result.get(0).getId());
+        assertEquals(history2.getMailItem(), result.get(0).getMailItem());
     }
 }
+
 

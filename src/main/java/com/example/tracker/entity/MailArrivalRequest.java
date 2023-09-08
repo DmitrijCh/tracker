@@ -7,6 +7,11 @@ public class MailArrivalRequest {
     public MailArrivalRequest() {
     }
 
+    public MailArrivalRequest(Long mailItemId, Long postOfficeId) {
+        this.mailItemId = mailItemId;
+        this.postOfficeId = postOfficeId;
+    }
+
     public Long getMailItemId() {
         return mailItemId;
     }

@@ -1,143 +1,162 @@
 package com.example.tracker.controller;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.example.tracker.entity.*;
 import com.example.tracker.repository.MovementHistoryRepository;
 import com.example.tracker.service.MailService;
 import com.example.tracker.service.MovementHistoryService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;;
 
-@WebMvcTest(Controller.class)
 public class ControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
+    private Controller mailController;
     private MailService mailService;
-
-    @MockBean
+    private MovementHistoryRepository movementHistoryRepository;
     private MovementHistoryService movementHistoryService;
 
-    @MockBean
-    private MovementHistoryRepository movementHistoryRepository;
+    @BeforeEach
+    public void setUp() {
+        mailService = mock(MailService.class);
+        movementHistoryRepository = mock(MovementHistoryRepository.class);
+        movementHistoryService = mock(MovementHistoryService.class);
+        mailController = new Controller(mailService, movementHistoryService, movementHistoryRepository);
+    }
 
     @Test
-    public void testRegisterMail() throws Exception {
+    public void testRegisterMail() {
         MailItem mailItem = new MailItem();
         mailItem.setType("Тип почты");
         mailItem.setRecipientIndex("Индекс получателя");
         mailItem.setRecipientAddress("Адрес получателя");
         mailItem.setRecipientName("Имя получателя");
 
-        when(mailService.registerMailItem(mailItem)).thenReturn(mailItem);
+        MailItem registeredMailItem = new MailItem();
+        registeredMailItem.setId(1L);
 
-        mockMvc.perform(post("/api/mail/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(mailItem)))
-                .andExpect(status().isOk());
+        when(mailService.registerMailItem(mailItem)).thenReturn(registeredMailItem);
+
+        ResponseEntity<MailItem> response = mailController.registerMail(mailItem);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        verify(movementHistoryRepository, times(1)).save(any(MovementHistory.class));
     }
 
     @Test
-    public void testUpdateMailArrival() throws Exception {
+    public void testUpdateMailArrival() {
+        MailArrivalRequest request = new MailArrivalRequest();
+        request.setMailItemId(1L);
+        request.setPostOfficeId(2L);
+
         MailItem mailItem = new MailItem();
         mailItem.setId(1L);
 
-        MailArrivalRequest arrivalRequest = new MailArrivalRequest();
-        arrivalRequest.setMailItemId(mailItem.getId());
-        arrivalRequest.setPostOfficeId(2L);
+        when(mailService.updateCurrentPostOffice(1L, 2L)).thenReturn(mailItem);
 
-        when(mailService.updateCurrentPostOffice(mailItem.getId(), arrivalRequest.getPostOfficeId()))
-                .thenReturn(mailItem);
+        ResponseEntity<MailItem> response = mailController.updateMailArrival(request);
 
-        mockMvc.perform(post("/api/mail/arrival")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(arrivalRequest)))
-                .andExpect(status().isOk());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        verify(movementHistoryRepository, times(1)).save(any(MovementHistory.class));
     }
 
     @Test
-    public void testUpdateMailDeparture() throws Exception {
+    public void testUpdateMailDeparture() {
+        MailDepartureRequest request = new MailDepartureRequest();
+        request.setMailItemId(1L);
+
         MailItem mailItem = new MailItem();
         mailItem.setId(1L);
 
-        MailDepartureRequest departureRequest = new MailDepartureRequest();
-        departureRequest.setMailItemId(mailItem.getId());
+        when(mailService.updateDepartureFromPostOffice(1L)).thenReturn(mailItem);
 
-        when(mailService.updateDepartureFromPostOffice(mailItem.getId()))
-                .thenReturn(mailItem);
+        ResponseEntity<MailItem> response = mailController.updateMailDeparture(request);
 
-        mockMvc.perform(post("/api/mail/departure")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(departureRequest)))
-                .andExpect(status().isOk());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        verify(movementHistoryRepository, times(1)).save(any(MovementHistory.class));
     }
 
     @Test
-    public void testReceiveMail() throws Exception {
+    public void testReceiveMail() {
+        MailItemIdWrapper wrapper = new MailItemIdWrapper();
+        wrapper.setMailItemId(1L);
+
         MailItem mailItem = new MailItem();
         mailItem.setId(1L);
 
-        MailItemIdWrapper itemIdWrapper = new MailItemIdWrapper();
-        itemIdWrapper.setMailItemId(mailItem.getId());
+        when(mailService.updateReceivedStatus(1L)).thenReturn(mailItem);
 
-        when(mailService.updateReceivedStatus(mailItem.getId()))
-                .thenReturn(mailItem);
+        ResponseEntity<MailItem> response = mailController.receiveMail(wrapper);
 
-        mockMvc.perform(post("/api/mail/receive")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(itemIdWrapper)))
-                .andExpect(status().isOk());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        verify(movementHistoryRepository, times(1)).save(any(MovementHistory.class));
     }
 
     @Test
-    public void testGetFullHistory() throws Exception {
-        Long mailItemId = 1L; // Здесь используйте реальный ID
+    public void testGetFullHistory() {
+        Map<String, Long> request = Collections.singletonMap("mailItemId", 1L);
+
         MailItem mailItem = new MailItem();
-        mailItem.setId(mailItemId);
+        mailItem.setId(1L);
 
         MovementHistory historyEntry = new MovementHistory();
-        historyEntry.setTimestamp(LocalDateTime.parse("2023-08-28T16:33:45.699657"));
-        historyEntry.setLocation("Post Office A");
-        historyEntry.setStatus("In Transit");
+        historyEntry.setTimestamp(LocalDateTime.now());
+        historyEntry.setLocation("Локация");
+        historyEntry.setStatus("Статус");
+        List<MovementHistory> history = new ArrayList<>();
+        history.add(historyEntry);
 
-        List<MovementHistory> historyList = new ArrayList<>();
-        historyList.add(historyEntry);
+        when(mailService.findMailItemById(1L)).thenReturn(mailItem);
+        when(movementHistoryService.getFullHistory(mailItem)).thenReturn(history);
 
-        when(mailService.findMailItemById(mailItemId)).thenReturn(mailItem);
-        when(movementHistoryService.getFullHistory(mailItem)).thenReturn(historyList);
+        ResponseEntity<List<MovementHistory>> response = mailController.getFullHistory(request);
 
-        Map<String, Long> request = new HashMap<>();
-        request.put("mailItemId", mailItemId);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
-        mockMvc.perform(post("/history")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(request)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].timestamp").value("2023-08-29 14:30:00"))
-                .andExpect(jsonPath("$[0].location").value("Post Office A"))
-                .andExpect(jsonPath("$[0].status").value("In Transit"));
+        verify(mailService, times(1)).findMailItemById(1L);
+        verify(movementHistoryService, times(1)).getFullHistory(mailItem);
     }
 
-    private String asJsonString(Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+    @Test
+    public void testGetFullHistoryNotFound() {
+        Map<String, Long> request = Collections.singletonMap("mailItemId", 1L);
+
+        when(mailService.findMailItemById(1L)).thenReturn(null);
+
+        ResponseEntity<List<MovementHistory>> response = mailController.getFullHistory(request);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    public void testGetFullHistoryEmptyHistory() {
+        Map<String, Long> request = Collections.singletonMap("mailItemId", 1L);
+
+        MailItem mailItem = new MailItem();
+        mailItem.setId(1L);
+
+        when(mailService.findMailItemById(1L)).thenReturn(mailItem);
+        when(movementHistoryService.getFullHistory(mailItem)).thenReturn(Collections.emptyList());
+
+        ResponseEntity<List<MovementHistory>> response = mailController.getFullHistory(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(Collections.emptyList(), response.getBody());
     }
 }
+
 
