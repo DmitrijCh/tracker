@@ -4,4 +4,4 @@
 
 ## Общее покрытие
 
-![Покрытие](/home/dmitrij/tracker/doc/img/test.png) 
+![Покрытие](./img/test.png)
