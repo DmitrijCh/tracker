@@ -4,6 +4,7 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.dmitrijch.tracker.entity.MovementHistory;
+import com.dmitrijch.tracker.request.HistoryRequest;
 import com.dmitrijch.tracker.request.MailArrivalRequest;
 import com.dmitrijch.tracker.request.MailDepartureRequest;
 import com.dmitrijch.tracker.request.MailItemIdWrapperRequest;
@@ -190,7 +191,7 @@ public class ControllerTest {
         when(mailService.findMailItemById(anyLong())).thenReturn(history);
 
         // Вызываем метод getFullHistory контроллера, передавая запрос, и сохраняем результат в объект response.
-        ResponseEntity<List<MovementHistory>> response = (ResponseEntity<List<MovementHistory>>) mailController.getFullHistory(request);
+        ResponseEntity<List<MovementHistory>> response = (ResponseEntity<List<MovementHistory>>) mailController.getFullHistory((HistoryRequest) request);
 
         // Проверяем, что HTTP-статус ответа равен HttpStatus.OK.
         assertEquals(HttpStatus.OK, response.getStatusCode());

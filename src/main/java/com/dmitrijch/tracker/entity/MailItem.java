@@ -1,6 +1,8 @@
 package com.dmitrijch.tracker.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 @Entity
 public class MailItem {
@@ -9,9 +11,20 @@ public class MailItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Pattern(
+            regexp = "^(письмо|посылка|бандероль|открытка)$",
+            message = "Неверное значение поля 'тип'. Поддерживаемые значения: письмо, посылка, бандероль, открытка."
+    )
+    @NotBlank(message = "Тип не может быть пустым")
     private String type;
+
+    @NotBlank(message = "Индекс получателя не может быть пустым")
     private String recipientIndex;
+
+    @NotBlank(message = "Адрес получателя не может быть пустым")
     private String recipientAddress;
+
+    @NotBlank(message = "Имя получателя не может быть пустым")
     private String recipientName;
 
     @ManyToOne

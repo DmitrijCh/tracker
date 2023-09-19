@@ -1,7 +1,13 @@
 package com.dmitrijch.tracker.request;
 
+import jakarta.validation.constraints.NotNull;
+
 public class MailArrivalRequest {
+
+    @NotNull(message = "Идентификатор почтового элемента не может быть пустым")
     private Long mailItemId;
+
+    @NotNull(message = "Идентификатор почтового отделения не может быть пустым")
     private Long postOfficeId;
 
     public MailArrivalRequest() {
