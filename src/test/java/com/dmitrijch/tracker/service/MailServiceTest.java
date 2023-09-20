@@ -1,9 +1,9 @@
 package com.dmitrijch.tracker.service;
 
+import com.dmitrijch.tracker.entity.MailItem;
 import com.dmitrijch.tracker.entity.MovementHistory;
 import com.dmitrijch.tracker.entity.PostOffice;
 import com.dmitrijch.tracker.repository.MailItemRepository;
-import com.dmitrijch.tracker.entity.MailItem;
 import com.dmitrijch.tracker.repository.MovementHistoryRepository;
 import com.dmitrijch.tracker.repository.PostOfficeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +13,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.List;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class MailServiceTest {
     private MailService mailService;
@@ -30,7 +30,7 @@ public class MailServiceTest {
         postOfficeRepository = mock(PostOfficeRepository.class);
         movementHistoryRepository = mock(MovementHistoryRepository.class);
         movementHistoryService = Mockito.mock(MovementHistoryService.class);
-        mailService = new MailService (mailItemRepository, postOfficeRepository, movementHistoryRepository, movementHistoryService);
+        mailService = new MailService(mailItemRepository, postOfficeRepository, movementHistoryRepository, movementHistoryService);
     }
 
     @Test

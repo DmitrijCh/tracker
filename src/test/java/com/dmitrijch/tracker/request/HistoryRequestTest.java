@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MailDepartureRequestTest {
+public class HistoryRequestTest {
 
     @Test
     public void testGetSetMailItemId() {
-        MailDepartureRequest request = new MailDepartureRequest();
+        HistoryRequest request = new HistoryRequest();
         request.setMailItemId(1L);
         assertEquals(1L, request.getMailItemId());
     }

@@ -1,7 +1,7 @@
 package com.dmitrijch.tracker.repository;
 
-import com.dmitrijch.tracker.entity.MovementHistory;
 import com.dmitrijch.tracker.entity.MailItem;
+import com.dmitrijch.tracker.entity.MovementHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

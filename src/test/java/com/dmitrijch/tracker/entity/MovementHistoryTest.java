@@ -1,10 +1,10 @@
 package com.dmitrijch.tracker.entity;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MovementHistoryTest {
 
@@ -45,4 +45,3 @@ public class MovementHistoryTest {
         assertEquals("Status XYZ", history.getStatus());
     }
 }
-

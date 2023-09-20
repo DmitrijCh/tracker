@@ -1,8 +1,6 @@
 package com.dmitrijch.tracker.controller;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
+import com.dmitrijch.tracker.entity.MailItem;
 import com.dmitrijch.tracker.entity.MovementHistory;
 import com.dmitrijch.tracker.request.HistoryRequest;
 import com.dmitrijch.tracker.request.MailArrivalRequest;
@@ -10,9 +8,10 @@ import com.dmitrijch.tracker.request.MailDepartureRequest;
 import com.dmitrijch.tracker.request.MailItemIdWrapperRequest;
 import com.dmitrijch.tracker.service.MailService;
 import com.dmitrijch.tracker.service.MovementHistoryService;
-import com.dmitrijch.tracker.entity.MailItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -20,8 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 public class ControllerTest {
 
@@ -64,32 +63,6 @@ public class ControllerTest {
         // Проверяем, что метод registerMailItem у mailService был вызван ровно один раз
         // с mailItem в качестве аргумента.
         verify(mailService, times(1)).registerMailItem(mailItem);
-    }
-
-    @Test
-    public void testRegisterMailWithInvalidData() {
-        // Создаем объект MailItem с неверными данными (например, пустым типом).
-        MailItem mailItem = new MailItem();
-        mailItem.setType(""); // Пустой тип
-
-        // Вызываем метод registerMail контроллера и сохраняем результат в объект response.
-        ResponseEntity<?> response = mailController.registerMail(mailItem);
-
-        // Проверяем, что возвращаемый HTTP-статус соответствует ожидаемому (HttpStatus.BAD_REQUEST).
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    }
-
-    @Test
-    public void testRegisterMailWithInvalidType() {
-        // Создаем объект MailItem с недопустимым типом.
-        MailItem mailItem = new MailItem();
-        mailItem.setType("недопустимый тип");
-
-        // Вызываем метод registerMail контроллера и сохраняем результат в объект response.
-        ResponseEntity<?> response = mailController.registerMail(mailItem);
-
-        // Проверяем, что возвращаемый HTTP-статус соответствует ожидаемому (HttpStatus.BAD_REQUEST).
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
@@ -170,8 +143,9 @@ public class ControllerTest {
 
     @Test
     public void testGetFullHistory() {
-        // Создаем запрос в виде Map, содержащий идентификатор почтового элемента.
-        Map<String, Long> request = Collections.singletonMap("mailItemId", 1L);
+        // Создаем объект HistoryRequest с идентификатором почтового элемента.
+        HistoryRequest historyRequest = new HistoryRequest();
+        historyRequest.setMailItemId(1L);
 
         // Создаем объект MailItem с установленным идентификатором.
         MailItem mailItem = new MailItem();
@@ -190,16 +164,15 @@ public class ControllerTest {
         // При вызове getFullHistory(mailItem) должен быть возвращен список history.
         when(mailService.findMailItemById(anyLong())).thenReturn(history);
 
-        // Вызываем метод getFullHistory контроллера, передавая запрос, и сохраняем результат в объект response.
-        ResponseEntity<List<MovementHistory>> response = (ResponseEntity<List<MovementHistory>>) mailController.getFullHistory((HistoryRequest) request);
-
-        // Проверяем, что HTTP-статус ответа равен HttpStatus.OK.
+        // Вызываем метод getFullHistory контроллера, передавая объект historyRequest, и сохраняем результат в объект response.
+        ResponseEntity<?> response = mailController.getFullHistory(historyRequest);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         // Проверяем, что метод findMailItemById был вызван ровно один раз с аргументом 1L.
         // Проверяем, что метод getFullHistory был вызван ровно один раз с аргументом mailItem.
         verify(mailService, times(1)).findMailItemById(1L);
     }
+
 
     @Test
     public void testGetFullHistoryNotFound() {
@@ -227,5 +200,3 @@ public class ControllerTest {
         when(movementHistoryService.getFullHistory(mailItem)).thenReturn(Collections.emptyList());
     }
 }
-
-

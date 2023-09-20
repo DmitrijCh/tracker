@@ -34,4 +34,3 @@ public class PostOfficeTest {
         assertEquals("456 Street", postOffice.getAddress());
     }
 }
-

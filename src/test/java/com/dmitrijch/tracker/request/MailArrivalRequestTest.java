@@ -1,6 +1,5 @@
 package com.dmitrijch.tracker.request;
 
-import com.dmitrijch.tracker.request.MailArrivalRequest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,5 +20,3 @@ public class MailArrivalRequestTest {
         assertEquals(2L, request.getPostOfficeId());
     }
 }
-
-

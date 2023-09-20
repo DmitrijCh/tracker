@@ -1,8 +1,8 @@
 package com.dmitrijch.tracker.service;
 
+import com.dmitrijch.tracker.entity.MailItem;
 import com.dmitrijch.tracker.entity.MovementHistory;
 import com.dmitrijch.tracker.repository.MovementHistoryRepository;
-import com.dmitrijch.tracker.entity.MailItem;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -10,8 +10,9 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class MovementHistoryServiceTest {
 
@@ -44,5 +45,3 @@ public class MovementHistoryServiceTest {
         assertEquals(history2.getMailItem(), result.get(0).getMailItem());
     }
 }
-
-

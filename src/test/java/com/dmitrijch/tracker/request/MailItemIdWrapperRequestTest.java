@@ -1,6 +1,5 @@
 package com.dmitrijch.tracker.request;
 
-import com.dmitrijch.tracker.request.MailItemIdWrapperRequest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,4 +13,3 @@ public class MailItemIdWrapperRequestTest {
         assertEquals(1L, wrapper.getMailItemId());
     }
 }
-

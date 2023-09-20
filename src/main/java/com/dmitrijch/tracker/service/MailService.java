@@ -1,9 +1,9 @@
 package com.dmitrijch.tracker.service;
 
+import com.dmitrijch.tracker.entity.MailItem;
 import com.dmitrijch.tracker.entity.MovementHistory;
 import com.dmitrijch.tracker.entity.PostOffice;
 import com.dmitrijch.tracker.repository.MailItemRepository;
-import com.dmitrijch.tracker.entity.MailItem;
 import com.dmitrijch.tracker.repository.MovementHistoryRepository;
 import com.dmitrijch.tracker.repository.PostOfficeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class MailService {
         this.mailItemRepository = mailItemRepository;
         this.postOfficeRepository = postOfficeRepository;
         this.movementHistoryRepository = movementHistoryRepository;
-        this.movementHistoryService =movementHistoryService;
+        this.movementHistoryService = movementHistoryService;
     }
 
     public MailItem registerMailItem(MailItem mailItem) {
