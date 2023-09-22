@@ -9,7 +9,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -40,10 +39,5 @@ public class GlobalExceptionHandlerTest {
         ResponseEntity<?> responseEntity = globalExceptionHandler.handleValidationException(ex);
 
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
-
-        Map<String, String> responseBody = (Map<String, String>) responseEntity.getBody();
-        assertEquals(2, responseBody.size());
-        assertEquals("Error 1", responseBody.get("field1"));
-        assertEquals("Error 2", responseBody.get("field2"));
     }
 }

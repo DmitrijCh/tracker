@@ -7,7 +7,6 @@ import com.dmitrijch.tracker.request.MailArrivalRequest;
 import com.dmitrijch.tracker.request.MailDepartureRequest;
 import com.dmitrijch.tracker.request.MailItemIdWrapperRequest;
 import com.dmitrijch.tracker.service.MailService;
-import com.dmitrijch.tracker.service.MovementHistoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -15,9 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -26,12 +23,10 @@ public class ControllerTest {
 
     private Controller mailController;
     private MailService mailService;
-    private MovementHistoryService movementHistoryService;
 
     @BeforeEach
     public void setUp() {
         mailService = mock(MailService.class);
-        movementHistoryService = mock(MovementHistoryService.class);
         mailController = new Controller(mailService);
     }
 
@@ -101,7 +96,7 @@ public class ControllerTest {
 
         when(mailService.updateReceivedStatus(1L)).thenReturn(mailItem);
 
-        ResponseEntity<MailItem> response = (ResponseEntity<MailItem>) mailController.receiveMail(wrapper);
+        ResponseEntity<?> response = mailController.receiveMail(wrapper);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -112,9 +107,6 @@ public class ControllerTest {
     public void testGetFullHistory() {
         HistoryRequest historyRequest = new HistoryRequest();
         historyRequest.setMailItemId(1L);
-
-        MailItem mailItem = new MailItem();
-        mailItem.setId(1L);
 
         MovementHistory historyEntry = new MovementHistory();
         historyEntry.setTimestamp(LocalDateTime.now());
@@ -129,23 +121,5 @@ public class ControllerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         verify(mailService, times(1)).findMailItemById(1L);
-    }
-
-    @Test
-    public void testGetFullHistoryNotFound() {
-        Map<String, Long> request = Collections.singletonMap("mailItemId", 1L);
-
-        when(mailService.findMailItemById(1L)).thenReturn(null);
-    }
-
-    @Test
-    public void testGetFullHistoryEmptyHistory() {
-        Map<String, Long> request = Collections.singletonMap("mailItemId", 1L);
-
-        MailItem mailItem = new MailItem();
-        mailItem.setId(1L);
-
-        when(mailService.findMailItemById(1L)).thenReturn(Collections.emptyList());
-        when(movementHistoryService.getFullHistory(mailItem)).thenReturn(Collections.emptyList());
     }
 }

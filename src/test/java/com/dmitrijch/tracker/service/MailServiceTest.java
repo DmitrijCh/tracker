@@ -20,16 +20,14 @@ public class MailServiceTest {
     private MailService mailService;
     private MailItemRepository mailItemRepository;
     private PostOfficeRepository postOfficeRepository;
-    private MovementHistoryRepository movementHistoryRepository;
-    private MovementHistoryService movementHistoryService;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mailItemRepository = mock(MailItemRepository.class);
         postOfficeRepository = mock(PostOfficeRepository.class);
-        movementHistoryRepository = mock(MovementHistoryRepository.class);
-        movementHistoryService = Mockito.mock(MovementHistoryService.class);
+        MovementHistoryRepository movementHistoryRepository = mock(MovementHistoryRepository.class);
+        MovementHistoryService movementHistoryService = Mockito.mock(MovementHistoryService.class);
         mailService = new MailService(mailItemRepository, postOfficeRepository, movementHistoryRepository, movementHistoryService);
     }
 
@@ -55,8 +53,8 @@ public class MailServiceTest {
         PostOffice postOffice = new PostOffice();
         postOffice.setId(postOfficeId);
 
-        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.ofNullable(mailItem));
-        when(postOfficeRepository.findById(postOfficeId)).thenReturn(java.util.Optional.ofNullable(postOffice));
+        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.of(mailItem));
+        when(postOfficeRepository.findById(postOfficeId)).thenReturn(java.util.Optional.of(postOffice));
         when(mailItemRepository.save(mailItem)).thenReturn(mailItem);
 
         MailItem updatedMailItem = mailService.updateCurrentPostOffice(mailItemId, postOfficeId);
@@ -73,7 +71,7 @@ public class MailServiceTest {
         MailItem mailItem = new MailItem();
         mailItem.setId(mailItemId);
 
-        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.ofNullable(mailItem));
+        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.of(mailItem));
         when(mailItemRepository.save(mailItem)).thenReturn(mailItem);
 
         MailItem updatedMailItem = mailService.updateDepartureFromPostOffice(mailItemId);
@@ -90,7 +88,7 @@ public class MailServiceTest {
         MailItem mailItem = new MailItem();
         mailItem.setId(mailItemId);
 
-        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.ofNullable(mailItem));
+        when(mailItemRepository.findById(mailItemId)).thenReturn(java.util.Optional.of(mailItem));
         when(mailItemRepository.save(mailItem)).thenReturn(mailItem);
 
         MailItem updatedMailItem = mailService.updateReceivedStatus(mailItemId);
